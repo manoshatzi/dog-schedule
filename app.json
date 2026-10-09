@@ -8,7 +8,11 @@
     "scheme": "dogschedule",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "infoPlist": {
+        "UIStatusBarHidden": true
+      },
+      "bundleIdentifier": "com.manoshatzi.dog-schedule"
     },
     "android": {
       "adaptiveIcon": {
