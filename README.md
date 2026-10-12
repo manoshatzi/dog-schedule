@@ -2,6 +2,22 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Supabase
+
+Copy `.env.example` to `.env.local` and set the project URL and publishable key from your Supabase project's API settings. `.env.local` is ignored by Git. Never put a Supabase secret or service-role key in the app.
+
+Apply [`supabase/migrations/202610090001_shared_households.sql`](supabase/migrations/202610090001_shared_households.sql) in the Supabase Dashboard SQL Editor before opening the app. It creates household membership, daily needs, invite RPCs, Row Level Security, and Realtime publication. The app then supports email/password accounts, creating or joining one household, and shared live needs. New accounts may need to confirm their email before signing in.
+
+If the household schema is already installed, also apply [`supabase/migrations/202610100001_need_schedule_options.sql`](supabase/migrations/202610100001_need_schedule_options.sql) to add need types, durations, and repeat days.
+
+Apply [`supabase/migrations/202610110001_today_occurrences.sql`](supabase/migrations/202610110001_today_occurrences.sql) to enable shared daily booking and completion status on the Today screen.
+
+Apply [`supabase/migrations/202610120001_task_booking_options.sql`](supabase/migrations/202610120001_task_booking_options.sql) to enable household-member assignment and booking preferences from the Book Task screen.
+
+Apply [`supabase/migrations/202610130001_weekly_booking_repeats.sql`](supabase/migrations/202610130001_weekly_booking_repeats.sql) so repeating bookings appear across week navigation and remain scheduled after completion.
+
+After applying the migration, restart Expo. The first family member creates a household and shares its invite code from the Needs screen. Other members create their own accounts and join with that code.
+
 ## Get started
 
 1. Install dependencies
