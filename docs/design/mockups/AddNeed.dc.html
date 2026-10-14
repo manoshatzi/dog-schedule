@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add a need</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#2F6B4F}a:hover{color:#1F4A36}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; background: #5C625F; color: #1C2321; font-family: 'DM Sans', system-ui, sans-serif">
+
+<div style="position: absolute; left: 20px; right: 20px; top: 16px; height: 64px; border-radius: 18px; background: #1F3D2F; opacity: 0.6"></div>
+
+<div style="position: absolute; left: 0; right: 0; top: 44px; bottom: 0; background: #FFFFFF; border-radius: 24px 24px 0 0; display: flex; flex-direction: column">
+
+<div style="display: flex; justify-content: center; padding-top: 8px"><div style="width: 40px; height: 5px; border-radius: 3px; background: #D3D8D0"></div></div>
+
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 4px 20px">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 700; line-height: 1.1">New daily need</h1>
+<div style="font-size: 13px; color: #5A635F">For Summer · shared with the household</div>
+</div>
+<a href="Needs.dc.html" aria-label="Close" style="width: 44px; height: 44px; border-radius: 22px; background: #F1F2EE; color: #1C2321; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+</div>
+
+<div style="flex-grow: 1; overflow-y: auto; padding: 12px 20px 16px; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 12px; font-weight: 600; color: #5A635F; letter-spacing: 0.05em; text-transform: uppercase">Type</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{types}}" as="t" hint-placeholder-count="6">
+<button onClick="{{t.pick}}" aria-pressed="{{t.selected}}" style="{{t.style}}">
+<sc-if value="{{t.isWalk}}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4.5" r="1.8"></circle><path d="M10 21l2-6 3 3v3M12 15l-1-5 4 1 2 3M11 10l-3 2-1 3"></path></svg></sc-if>
+<sc-if value="{{t.isFood}}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h18l-2 6.5a2 2 0 0 1-1.9 1.5H6.9A2 2 0 0 1 5 18.5z"></path><path d="M8 9c0-1.5 1-2.5 2-2.5M12 9c0-2 1.2-3.5 3-3.5"></path></svg></sc-if>
+<sc-if value="{{t.isMeds}}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="8.5" width="17" height="7" rx="3.5" transform="rotate(-40 12 12)"></rect><path d="M9.6 9.2l5.2 5.6"></path></svg></sc-if>
+<sc-if value="{{t.isPotty}}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V11M12 11c-4 0-6-3-6-6 3 0 6 2 6 6zM12 14c4 0 6-3 6-6-3 0-6 2-6 6z"></path><path d="M7 21h10"></path></svg></sc-if>
+<sc-if value="{{t.isPlay}}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M5 9c3 1 5 4 5.5 11M19 15c-3-1-5-4-5.5-11"></path></svg></sc-if>
+<sc-if value="{{t.isGroom}}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="6" rx="2"></rect><path d="M7 10v5M10 10v5M14 10v5M17 10v5M12 4V2"></path></svg></sc-if>
+<span>{{t.label}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+
+<label style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 600; color: #5A635F; letter-spacing: 0.05em; text-transform: uppercase">Name</span>
+<input type="text" value="{{name}}" onChange="{{onName}}" style="height: 52px; box-sizing: border-box; border-radius: 14px; border: 1px solid #C9CFC6; background: #F7F8F5; padding: 0 16px; font-family: inherit; font-size: 16px; font-weight: 500; color: #1C2321">
+</label>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 12px; font-weight: 600; color: #5A635F; letter-spacing: 0.05em; text-transform: uppercase">Time</div>
+<div style="display: flex; align-items: center; justify-content: space-between; background: #F7F8F5; border: 1px solid #E3E6E0; border-radius: 16px; padding: 8px">
+<button onClick="{{earlier}}" aria-label="15 minutes earlier" style="width: 48px; height: 48px; border-radius: 12px; border: none; background: #FFFFFF; color: #1C2321; box-shadow: 0 1px 2px rgba(28,35,33,0.12); display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+<div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 40px; font-weight: 700; letter-spacing: 0.02em; font-variant-numeric: tabular-nums">{{time}}</div>
+<button onClick="{{later}}" aria-label="15 minutes later" style="width: 48px; height: 48px; border-radius: 12px; border: none; background: #FFFFFF; color: #1C2321; box-shadow: 0 1px 2px rgba(28,35,33,0.12); display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{presets}}" as="p" hint-placeholder-count="4">
+<button onClick="{{p.pick}}" style="{{p.style}}"><span style="font-size: 12px">{{p.label}}</span><span style="font-size: 13px; font-weight: 700">{{p.time}}</span></button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="font-size: 12px; font-weight: 600; color: #5A635F; letter-spacing: 0.05em; text-transform: uppercase">{{amountLabel}}</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{amounts}}" as="a" hint-placeholder-count="4">
+<button onClick="{{a.pick}}" style="{{a.style}}">{{a.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<div style="font-size: 12px; font-weight: 600; color: #5A635F; letter-spacing: 0.05em; text-transform: uppercase">Repeats</div>
+<div style="font-size: 13px; font-weight: 600; color: #2F6B4F">{{repeatText}}</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+<button onClick="{{d.toggle}}" aria-label="{{d.full}}" aria-pressed="{{d.on}}" style="{{d.style}}">{{d.short}}</button>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 0; border: 1px solid #E3E6E0; border-radius: 16px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px">
+<div style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1">
+<div style="font-size: 15px; font-weight: 600">Must do</div>
+<div style="font-size: 12px; line-height: 1.4; color: #5A635F">Alerts everyone if it isn’t booked 1 hour before</div>
+</div>
+<button onClick="{{toggleMust}}" aria-label="Must do" aria-pressed="{{must}}" style="{{mustTrack}}"><span style="{{mustKnob}}"></span></button>
+</div>
+<div style="height: 1px; background: #E3E6E0; margin-left: 16px"></div>
+<label style="display: flex; flex-direction: column; gap: 6px; padding: 12px 16px">
+<span style="font-size: 15px; font-weight: 600">Notes for whoever does it <span style="font-weight: 400; color: #5A635F">(optional)</span></span>
+<textarea rows="2" placeholder="e.g. use the harness, avoid the busy road" style="border: none; resize: none; padding: 0; font-family: inherit; font-size: 15px; line-height: 1.4; color: #1C2321; background: transparent"></textarea>
+</label>
+</div>
+
+</div>
+
+<div style="padding: 12px 20px 28px; border-top: 1px solid #EEF0EC; display: flex; flex-direction: column; gap: 10px; background: #FFFFFF">
+<div style="font-size: 13px; color: #3E4743; text-align: center">{{summary}}</div>
+<a href="Needs.dc.html" style="height: 56px; border-radius: 16px; background: #2F6B4F; color: #FFFFFF; font-size: 16px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Add to Summer’s day</a>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { type: 'walk', name: null, minutes: 450, amount: 1, days: [true, true, true, true, true, true, true], must: false };
+}
+renderVals() {
+var self = this;
+var s = this.state;
+var chipOn = 'border: 2px solid #2F6B4F; background: #EAF3EE; color: #1F4A36; font-weight: 600;';
+var chipOff = 'border: 2px solid #E3E6E0; background: #FFFFFF; color: #3E4743; font-weight: 500;';
+var typeDefs = [
+{ id: 'walk', label: 'Walk', name: 'Morning walk' },
+{ id: 'food', label: 'Food', name: 'Breakfast' },
+{ id: 'meds', label: 'Medicine', name: 'Medicine' },
+{ id: 'potty', label: 'Potty', name: 'Potty break' },
+{ id: 'play', label: 'Play', name: 'Play time' },
+{ id: 'groom', label: 'Grooming', name: 'Brushing' }
+];
+var current = typeDefs.filter(function (t) { return t.id === s.type; })[0];
+var types = typeDefs.map(function (t) {
+var on = t.id === s.type;
+return {
+label: t.label, selected: on,
+isWalk: t.id === 'walk', isFood: t.id === 'food', isMeds: t.id === 'meds', isPotty: t.id === 'potty', isPlay: t.id === 'play', isGroom: t.id === 'groom',
+style: 'height: 68px; border-radius: 14px; font-family: inherit; font-size: 13px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; ' + (on ? chipOn : chipOff),
+pick: function () { self.setState({ type: t.id, name: null, amount: 1 }); }
+};
+});
+var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+var fmt = function (m) { return pad(Math.floor(m / 60)) + ':' + pad(m % 60); };
+var presetDefs = [['Morning', 450], ['Midday', 780], ['Evening', 1080], ['Night', 1350]];
+var presets = presetDefs.map(function (p) {
+var on = p[1] === s.minutes;
+return {
+label: p[0], time: fmt(p[1]),
+style: 'height: 52px; border-radius: 12px; font-family: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; ' + (on ? chipOn : chipOff),
+pick: function () { self.setState({ minutes: p[1] }); }
+};
+});
+var isFood = s.type === 'food';
+var isMeds = s.type === 'meds';
+var amountDefs = isFood ? ['100 g', '150 g', '200 g', 'Other'] : isMeds ? ['1 pill', '2 pills', 'Drops', 'Other'] : ['10 min', '15 min', '30 min', '45 min'];
+var amounts = amountDefs.map(function (label, i) {
+var on = i === s.amount;
+return {
+label: label,
+style: 'height: 44px; border-radius: 12px; font-family: inherit; font-size: 14px; ' + (on ? chipOn : chipOff),
+pick: function () { self.setState({ amount: i }); }
+};
+});
+var dayDefs = [['M', 'Monday'], ['T', 'Tuesday'], ['W', 'Wednesday'], ['T', 'Thursday'], ['F', 'Friday'], ['S', 'Saturday'], ['S', 'Sunday']];
+var days = dayDefs.map(function (d, i) {
+var on = s.days[i];
+return {
+short: d[0], full: d[1], on: on,
+style: 'height: 44px; border-radius: 22px; font-family: inherit; font-size: 14px; font-weight: 700; ' + (on ? 'border: none; background: #2F6B4F; color: #FFFFFF;' : 'border: 2px solid #E3E6E0; background: #FFFFFF; color: #5A635F;'),
+toggle: function () { var next = s.days.slice(); next[i] = !next[i]; self.setState({ days: next }); }
+};
+});
+var count = s.days.filter(Boolean).length;
+var weekdays = s.days.slice(0, 5).every(Boolean) && !s.days[5] && !s.days[6];
+var weekends = !s.days.slice(0, 5).some(Boolean) && s.days[5] && s.days[6];
+var repeatText = count === 7 ? 'Every day' : weekdays ? 'Weekdays' : weekends ? 'Weekends' : count === 0 ? 'Pick at least one day' : count + ' days a week';
+var amountLabel = isFood ? 'Amount' : isMeds ? 'Dose' : 'Duration';
+return {
+types: types,
+name: s.name === null ? current.name : s.name,
+onName: function (e) { self.setState({ name: e.target.value }); },
+time: fmt(s.minutes),
+earlier: function () { self.setState({ minutes: (s.minutes + 1440 - 15) % 1440 }); },
+later: function () { self.setState({ minutes: (s.minutes + 15) % 1440 }); },
+presets: presets,
+amountLabel: amountLabel,
+amounts: amounts,
+days: days,
+repeatText: repeatText,
+must: s.must,
+toggleMust: function () { self.setState({ must: !s.must }); },
+mustTrack: 'width: 52px; height: 32px; flex-shrink: 0; border-radius: 16px; border: none; padding: 3px; display: flex; ' + (s.must ? 'background: #2F6B4F; justify-content: flex-end;' : 'background: #C9CFC6; justify-content: flex-start;'),
+mustKnob: 'width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0,0,0,0.25); display: block',
+summary: repeatText + ' at ' + fmt(s.minutes) + ' · ' + amountDefs[s.amount] + (s.must ? ' · must do' : '')
+};
+}
+}
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@ import { NativeTabs } from "expo-router/native-tabs";
 import { useColorScheme } from "react-native";
 
 import { Colors } from "@/constants/theme";
+import { t } from "@/i18n";
 
 export default function AppTabs() {
   const scheme = useColorScheme();
@@ -14,17 +15,17 @@ export default function AppTabs() {
       labelStyle={{ selected: { color: colors.text } }}
     >
       <NativeTabs.Trigger name="index" disableTransparentOnScrollEdge>
-        <NativeTabs.Trigger.Label>Today</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>{t("tab.today")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="sun.max" md="today" />
       </NativeTabs.Trigger>
 
       <NativeTabs.Trigger name="week">
-        <NativeTabs.Trigger.Label>Week</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>{t("tab.week")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="calendar" md="calendar_month" />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="needs">
-        <NativeTabs.Trigger.Label>Needs</NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="routine">
+        <NativeTabs.Trigger.Label>{t("tab.routine")}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="checklist" md="checklist" />
       </NativeTabs.Trigger>
     </NativeTabs>

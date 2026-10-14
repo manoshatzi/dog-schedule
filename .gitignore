@@ -41,3 +41,8 @@ example
 # generated native folders
 /ios
 /android
+
+# Push credentials (FCM service-account keys, APNs keys are *.p8 above)
+*firebase-adminsdk*.json
+google-service-account*.json
+service-account*.json

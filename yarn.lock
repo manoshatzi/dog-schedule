@@ -2622,6 +2622,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"abort-controller@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "abort-controller@npm:3.0.0"
+  dependencies:
+    event-target-shim: "npm:^5.0.0"
+  checksum: 10c0/90ccc50f010250152509a344eb2e71977fbf8db0ab8f1061197e3275ddf6c61a41a6edfd7b9409c664513131dd96e962065415325ef23efa5db931b382d24ca5
+  languageName: node
+  linkType: hard
+
 "accepts@npm:^1.3.8":
   version: 1.3.8
   resolution: "accepts@npm:1.3.8"
@@ -3023,6 +3032,13 @@ __metadata:
     expo-widgets:
       optional: true
   checksum: 10c0/c67bcec8518348047b488a316ed90c60ae408e0e8437a870caefb72ad0f07cdc035545facc3667502da30cc643e3c16cd41cb5177f7448d667b465334f3e2abf
+  languageName: node
+  linkType: hard
+
+"badgin@npm:^1.1.5":
+  version: 1.2.3
+  resolution: "badgin@npm:1.2.3"
+  checksum: 10c0/f8ba1090240a8602a8d174214e3426b1a7ec3ecb820ec7e4561fd6181c07df572f02ad0e7ec9250e19dd9594d05a57719a5717a126d769f91fc0cc5d233119cf
   languageName: node
   linkType: hard
 
@@ -3617,6 +3633,7 @@ __metadata:
     eslint: "npm:^9.0.0"
     eslint-config-expo: "npm:~58.0.4"
     expo: "npm:~58.0.6"
+    expo-apple-authentication: "npm:~58.0.2"
     expo-constants: "npm:~58.0.10"
     expo-dev-client: "npm:~58.0.11"
     expo-device: "npm:~58.0.5"
@@ -3624,6 +3641,8 @@ __metadata:
     expo-glass-effect: "npm:~58.0.3"
     expo-image: "npm:~58.0.13"
     expo-linking: "npm:~58.0.11"
+    expo-localization: "npm:~58.0.4"
+    expo-notifications: "npm:~58.1.2"
     expo-router: "npm:~58.0.16"
     expo-splash-screen: "npm:~58.0.6"
     expo-status-bar: "npm:~58.0.3"
@@ -4163,6 +4182,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"event-target-shim@npm:^5.0.0":
+  version: 5.0.1
+  resolution: "event-target-shim@npm:5.0.1"
+  checksum: 10c0/0255d9f936215fd206156fd4caa9e8d35e62075d720dc7d847e89b417e5e62cf1ce6c9b4e0a1633a9256de0efefaf9f8d26924b1f3c8620cffb9db78e7d3076b
+  languageName: node
+  linkType: hard
+
+"expo-apple-authentication@npm:~58.0.2":
+  version: 58.0.2
+  resolution: "expo-apple-authentication@npm:58.0.2"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/ff06e5c41a2fdb3f18ee79120f2089caec93bf478a95a7303f6ca6c2ef2b451acc4a68f0d5f9b671742b205fa749fd82f076e69c68f5d81afd91468df2e29f5b
+  languageName: node
+  linkType: hard
+
+"expo-application@npm:~58.1.0":
+  version: 58.1.0
+  resolution: "expo-application@npm:58.1.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/76ddcf505a11c24a1607378a3a030654375f8341c3db4007ccbe9a12d0d705f736b6f75a0aa1473705a38dfe3069b04c2322980aa7782f24e3d7b2b377668e58
+  languageName: node
+  linkType: hard
+
 "expo-asset@npm:~58.0.13":
   version: 58.0.13
   resolution: "expo-asset@npm:58.0.13"
@@ -4331,6 +4377,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-localization@npm:~58.0.4":
+  version: 58.0.4
+  resolution: "expo-localization@npm:58.0.4"
+  dependencies:
+    rtl-detect: "npm:^1.0.2"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+  checksum: 10c0/dc8c870eb6ed28cf8eba542b551613b29b0ae9ab7495dafa56df97a08ffd6c3f397574438e8c0edeeaf972942afbf4ad6a8c943a5dfc992116e6a578ec61c951
+  languageName: node
+  linkType: hard
+
 "expo-manifests@npm:~58.0.1":
   version: 58.0.1
   resolution: "expo-manifests@npm:58.0.1"
@@ -4387,6 +4445,23 @@ __metadata:
   version: 0.15.0
   resolution: "expo-modules-macros@npm:0.15.0"
   checksum: 10c0/e3425fafd6c36ef652f97685080a61f0090c96258b9f9059a8008addfa7dfd97647521f4074585145d121957c8363ef3e56e8668bbef17c0e2946a95f236c99f
+  languageName: node
+  linkType: hard
+
+"expo-notifications@npm:~58.1.2":
+  version: 58.1.2
+  resolution: "expo-notifications@npm:58.1.2"
+  dependencies:
+    "@expo/image-utils": "npm:^0.12.4"
+    abort-controller: "npm:^3.0.0"
+    badgin: "npm:^1.1.5"
+    expo-application: "npm:~58.1.0"
+    expo-constants: "npm:~58.0.10"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/96d0f1a5a8521b0b445e858904ceb9247a8928c9181214681afe194334786d81a93995c371b348e65560d9daae8892c343081cdb5538052df4bd9555fa90968a
   languageName: node
   linkType: hard
 
@@ -7245,6 +7320,13 @@ __metadata:
     onetime: "npm:^2.0.0"
     signal-exit: "npm:^3.0.2"
   checksum: 10c0/f5b335bee06f440445e976a7031a3ef53691f9b7c4a9d42a469a0edaf8a5508158a0d561ff2b26a1f4f38783bcca2c0e5c3a44f927326f6694d5b44d7a4993e6
+  languageName: node
+  linkType: hard
+
+"rtl-detect@npm:^1.0.2":
+  version: 1.1.2
+  resolution: "rtl-detect@npm:1.1.2"
+  checksum: 10c0/1b92888aafca1593314f837e83fdf02eb208faae3e713ab87c176804728efd3b1980d53b64f65f1fa593348087e852c5cd729b7b9372950f6e9b7be489afc0ca
   languageName: node
   linkType: hard
 

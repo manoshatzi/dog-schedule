@@ -11,6 +11,7 @@ import type { ComponentProps } from "react";
 import { Pressable, StyleSheet, useColorScheme, View } from "react-native";
 
 import { Colors, MaxContentWidth, Spacing } from "@/constants/theme";
+import { t } from "@/i18n";
 
 import { ThemedText } from "./themed-text";
 import { ThemedView } from "./themed-view";
@@ -22,13 +23,13 @@ export default function AppTabs() {
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="today" href="/" asChild>
-            <TabButton icon="today">Today</TabButton>
+            <TabButton icon="today">{t("tab.today")}</TabButton>
           </TabTrigger>
           <TabTrigger name="week" href="/week" asChild>
-            <TabButton icon="calendar_month">Week</TabButton>
+            <TabButton icon="calendar_month">{t("tab.week")}</TabButton>
           </TabTrigger>
-          <TabTrigger name="needs" href="/needs" asChild>
-            <TabButton icon="checklist">Needs</TabButton>
+          <TabTrigger name="routine" href="/routine" asChild>
+            <TabButton icon="checklist">{t("tab.routine")}</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>

@@ -11,58 +11,46 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/themed-text";
-import { Spacing } from "@/constants/theme";
+import { MemberColors, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useDailyNeeds } from "@/hooks/use-daily-needs";
+import { usePalette } from "@/hooks/use-palette";
 import {
-  useDailyNeeds,
+  formatWeekdayShort,
+  formatWeekRange,
+  t,
+} from "@/i18n";
+import {
+  getInitials,
+  getMemberColor,
+  isNeedScheduledOn,
+  resolveOccurrence,
+  toDateKey,
   type DailyNeed,
   type DailyNeedOccurrence,
   type HouseholdMember,
-} from "@/hooks/use-daily-needs";
+} from "@/lib/tasks";
 
-const palette = {
-  light: {
-    background: "#F4F6F3",
-    surface: "#FFFFFF",
-    text: "#1B2522",
-    secondary: "#5C6762",
-    border: "#E1E6E1",
-    selected: "#18211E",
-    inactive: "#F0F2F0",
-  },
-  dark: {
-    background: "#141917",
-    surface: "#222B26",
-    text: "#F4F6F3",
-    secondary: "#ADB6B0",
-    border: "#39463D",
-    selected: "#DDEDE1",
-    inactive: "#202722",
-  },
-};
-
-const memberColors = [
-  { background: "#DCE8FA", text: "#244B86" },
-  { background: "#F9DFD0", text: "#8D4318" },
-  { background: "#E5DCF7", text: "#54378C" },
-  { background: "#E2E8D8", text: "#53643D" },
-];
-
+type Colors = ReturnType<typeof usePalette>;
 type WeekDay = { date: Date; key: string; short: string; number: string };
-type Slot = {
-  occurrence?: DailyNeedOccurrence;
-  source?: DailyNeedOccurrence;
-};
+
+/** Who a slot counts for in "Who covers what": completer, else claimer. */
+function getSlotOwner(occurrence: DailyNeedOccurrence) {
+  if (occurrence.status === "done") return occurrence.completedBy;
+  if (occurrence.status === "booked") return occurrence.assignedUserId;
+  return null;
+}
 
 export function WeekScreen() {
-  const { needs, occurrences, members, household, loadOccurrences } =
+  const { needs, occurrences, series, members, dog, household, userId, loadOccurrences } =
     useDailyNeeds();
   const [weekOffset, setWeekOffset] = useState(0);
   const [loadError, setLoadError] = useState("");
   const { width: viewportWidth } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const scheme = useColorScheme();
-  const colors = palette[scheme === "dark" ? "dark" : "light"];
+  const colors = usePalette();
+  const selectedDayColor = scheme === "dark" ? "#DDEDE1" : "#1C2321";
 
   const monday = getMonday(new Date(), weekOffset);
   const days: WeekDay[] = Array.from({ length: 7 }, (_, index) => {
@@ -70,16 +58,14 @@ export function WeekScreen() {
     date.setDate(monday.getDate() + index);
     return {
       date,
-      key: formatDate(date),
-      short: new Intl.DateTimeFormat("en-GB", { weekday: "short" })
-        .format(date)
-        .slice(0, 3),
+      key: toDateKey(date),
+      short: formatWeekdayShort(date),
       number: String(date.getDate()),
     };
   });
   const firstDate = days[0].key;
   const lastDate = days[6].key;
-  const todayKey = formatDate(new Date());
+  const todayKey = toDateKey(new Date());
   const gridWidth = Math.max(
     620,
     Math.min(852, viewportWidth - 68 - insets.left - insets.right),
@@ -87,12 +73,11 @@ export function WeekScreen() {
   const innerGridWidth = gridWidth - Spacing.three;
   const labelWidth = 126;
   const cellWidth = (innerGridWidth - labelWidth) / 7;
+  const solo = members.length <= 1;
 
   useEffect(() => {
-    loadOccurrences(firstDate, lastDate).catch((error: unknown) => {
-      setLoadError(
-        error instanceof Error ? error.message : "Could not load this week.",
-      );
+    loadOccurrences(firstDate, lastDate).catch(() => {
+      setLoadError(t("week.loadError"));
     });
   }, [firstDate, lastDate, loadOccurrences]);
 
@@ -101,36 +86,21 @@ export function WeekScreen() {
     setWeekOffset((value) => value + amount);
   }
 
-  const rangeLabel = getWeekLabel(days[0].date, days[6].date);
-  const openSlots = needs.reduce(
-    (total, need) =>
-      total +
-      days.filter((day) => {
-        const slot = getSlot(need.id, day.key, day.date, occurrences);
-        if (!isNeedScheduled(need, day.date) && !slot.source) return false;
-        return !slot.occurrence && !slot.source;
-      }).length,
-    0,
+  const slots = needs.flatMap((need) =>
+    days
+      .filter((day) => isNeedScheduledOn(need, day.key))
+      .map((day) =>
+        resolveOccurrence(need, day.key, occurrences, series, members),
+      ),
   );
+  const openSlots = slots.filter((slot) => slot.status === "open").length;
   const memberCounts = members.map((member) => ({
     member,
-    count: needs.reduce(
-      (count, need) =>
-        count +
-        days.filter((day) => {
-          const slot = getSlot(need.id, day.key, day.date, occurrences);
-          if (!isNeedScheduled(need, day.date) && !slot.source) return false;
-          return (
-            slot.occurrence?.assignedUserId === member.userId ||
-            slot.source?.assignedUserId === member.userId
-          );
-        }).length,
-      0,
-    ),
+    count: slots.filter((slot) => getSlotOwner(slot) === member.userId).length,
   }));
 
   return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}>
+    <View style={[styles.screen, { backgroundColor: colors.ground }]}>
       <ScrollView
         contentContainerStyle={[
           styles.content,
@@ -143,15 +113,14 @@ export function WeekScreen() {
       >
         <View style={styles.pageHeader}>
           <ThemedText
-            type="subtitle"
             accessibilityRole="header"
             style={[styles.pageTitle, { color: colors.text }]}
           >
-            This week
+            {t("week.title")}
           </ThemedText>
           <View style={styles.weekControls}>
             <WeekButton
-              label="Previous week"
+              label={t("week.previous")}
               icon={{
                 ios: "chevron.left",
                 android: "chevron_left",
@@ -161,7 +130,7 @@ export function WeekScreen() {
               onPress={() => changeWeek(-1)}
             />
             <WeekButton
-              label="Next week"
+              label={t("week.next")}
               icon={{
                 ios: "chevron.right",
                 android: "chevron_right",
@@ -172,13 +141,13 @@ export function WeekScreen() {
             />
           </View>
         </View>
-        <ThemedText style={[styles.dateRange, { color: colors.secondary }]}>
-          {rangeLabel}
+        <ThemedText style={[styles.dateRange, { color: colors.muted }]}>
+          {formatWeekRange(days[0].date, days[6].date)}
         </ThemedText>
 
         {needs.length === 0 ? (
-          <ThemedText style={{ color: colors.secondary }}>
-            Add daily needs to build {household.name}&apos;s weekly schedule.
+          <ThemedText style={{ color: colors.muted }}>
+            {t("week.empty", { dog: dog.name })}
           </ThemedText>
         ) : (
           <ScrollView horizontal showsHorizontalScrollIndicator>
@@ -190,16 +159,13 @@ export function WeekScreen() {
             >
               <View style={{ width: innerGridWidth }}>
                 <View
-                  style={[
-                    styles.gridHeader,
-                    { borderBottomColor: colors.border },
-                  ]}
+                  style={[styles.gridHeader, { borderBottomColor: colors.line }]}
                 >
                   <View style={{ width: labelWidth }} />
                   {days.map((day) => {
                     const selected = day.key === todayKey;
                     const selectedText =
-                      scheme === "dark" ? "#18211E" : "#FFFFFF";
+                      scheme === "dark" ? "#1C2321" : "#FFFFFF";
                     return (
                       <View
                         key={day.key}
@@ -208,13 +174,15 @@ export function WeekScreen() {
                         <View
                           style={[
                             styles.daySelected,
-                            selected && { backgroundColor: colors.selected },
+                            selected && { backgroundColor: selectedDayColor },
                           ]}
                         >
                           <ThemedText
+                            numberOfLines={1}
                             style={{
-                              color: selected ? selectedText : colors.secondary,
+                              color: selected ? selectedText : colors.muted,
                               fontWeight: "700",
+                              fontSize: 13,
                             }}
                           >
                             {day.short}
@@ -222,7 +190,7 @@ export function WeekScreen() {
                           <ThemedText
                             style={{
                               color: selected ? selectedText : colors.text,
-                              fontSize: 19,
+                              fontSize: 17,
                               fontWeight: "700",
                             }}
                           >
@@ -237,10 +205,7 @@ export function WeekScreen() {
                 {needs.map((need) => (
                   <View
                     key={need.id}
-                    style={[
-                      styles.taskRow,
-                      { borderBottomColor: colors.border },
-                    ]}
+                    style={[styles.taskRow, { borderBottomColor: colors.line }]}
                   >
                     <View style={[styles.taskLabel, { width: labelWidth }]}>
                       <ThemedText
@@ -249,38 +214,36 @@ export function WeekScreen() {
                       >
                         {need.title}
                       </ThemedText>
-                      <ThemedText style={{ color: colors.secondary }}>
+                      <ThemedText style={{ color: colors.muted, fontSize: 13 }}>
                         {need.time}
                       </ThemedText>
                     </View>
-                    {days.map((day) => {
-                      const slot = getSlot(
-                        need.id,
-                        day.key,
-                        day.date,
-                        occurrences,
-                      );
-                      const scheduled =
-                        isNeedScheduled(need, day.date) || Boolean(slot.source);
-                      return (
-                        <View
-                          key={`${need.id}-${day.key}`}
-                          style={[styles.cell, { width: cellWidth }]}
-                        >
-                          {scheduled ? (
-                            <WeekSlot
-                              need={need}
-                              day={day}
-                              slot={slot}
-                              members={members}
-                              colors={colors}
-                            />
-                          ) : (
-                            <InactiveCell colors={colors} />
-                          )}
-                        </View>
-                      );
-                    })}
+                    {days.map((day) => (
+                      <View
+                        key={`${need.id}-${day.key}`}
+                        style={[styles.cell, { width: cellWidth }]}
+                      >
+                        {isNeedScheduledOn(need, day.key) ? (
+                          <WeekSlot
+                            need={need}
+                            day={day}
+                            past={day.key < todayKey}
+                            occurrence={resolveOccurrence(
+                              need,
+                              day.key,
+                              occurrences,
+                              series,
+                              members,
+                            )}
+                            members={members}
+                            userId={userId}
+                            colors={colors}
+                          />
+                        ) : (
+                          <InactiveCell colors={colors} />
+                        )}
+                      </View>
+                    ))}
                   </View>
                 ))}
               </View>
@@ -289,21 +252,38 @@ export function WeekScreen() {
         )}
 
         {loadError ? (
-          <ThemedText accessibilityRole="alert" style={styles.error}>
+          <ThemedText
+            accessibilityRole="alert"
+            style={[styles.error, { color: colors.danger }]}
+          >
             {loadError}
           </ThemedText>
         ) : null}
 
         <View style={styles.coverageSection}>
-          <ThemedText
-            style={[styles.coverageTitle, { color: colors.secondary }]}
-          >
-            WHO COVERS WHAT
+          <ThemedText style={[styles.coverageTitle, { color: colors.muted }]}>
+            {t("week.coverage")}
           </ThemedText>
+          {solo ? (
+            // Solo nudge (user-flows.md a). TODO(Invite sheet, screens.md #21).
+            <View
+              style={[
+                styles.soloCard,
+                { backgroundColor: colors.surface, borderColor: colors.line },
+              ]}
+            >
+              <ThemedText style={{ color: colors.text, fontWeight: "600" }}>
+                {t("week.soloNudge")}
+              </ThemedText>
+              <ThemedText selectable style={{ color: colors.muted }}>
+                {t("week.inviteCode", { code: household.inviteCode })}
+              </ThemedText>
+            </View>
+          ) : null}
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.coverageRow}>
-              {memberCounts.map(({ member, count }, index) => {
-                const color = memberColors[index % memberColors.length];
+              {(solo ? [] : memberCounts).map(({ member, count }) => {
+                const color = getMemberColor(members, member.userId);
                 return (
                   <View
                     key={member.userId}
@@ -319,9 +299,9 @@ export function WeekScreen() {
                     </ThemedText>
                     <ThemedText
                       numberOfLines={1}
-                      style={[styles.coverageName, { color: colors.secondary }]}
+                      style={[styles.coverageName, { color: colors.muted }]}
                     >
-                      {member.name}
+                      {member.userId === userId ? t("common.you") : member.name}
                     </ThemedText>
                   </View>
                 );
@@ -330,11 +310,20 @@ export function WeekScreen() {
                 style={[
                   styles.coverageCard,
                   styles.openCoverage,
-                  { backgroundColor: "#FFF7E9" },
+                  {
+                    backgroundColor: colors.openFill,
+                    borderColor: colors.openBorder,
+                  },
                 ]}
               >
-                <ThemedText style={styles.openCount}>{openSlots}</ThemedText>
-                <ThemedText style={styles.openLabel}>Open</ThemedText>
+                <ThemedText
+                  style={[styles.coverageCount, { color: colors.openText }]}
+                >
+                  {openSlots}
+                </ThemedText>
+                <ThemedText style={[styles.coverageName, { color: colors.openText }]}>
+                  {t("week.open")}
+                </ThemedText>
               </View>
             </View>
           </ScrollView>
@@ -352,7 +341,7 @@ function WeekButton({
 }: {
   label: string;
   icon: ComponentProps<typeof SymbolView>["name"];
-  colors: (typeof palette)["light"];
+  colors: Colors;
   onPress: () => void;
 }) {
   return (
@@ -362,10 +351,10 @@ function WeekButton({
       onPress={onPress}
       style={[
         styles.weekButton,
-        { backgroundColor: colors.surface, borderColor: colors.border },
+        { backgroundColor: colors.surface, borderColor: colors.line },
       ]}
     >
-      <SymbolView name={icon} tintColor={colors.text} size={23} />
+      <SymbolView name={icon} tintColor={colors.text} size={20} />
     </Pressable>
   );
 }
@@ -373,70 +362,95 @@ function WeekButton({
 function WeekSlot({
   need,
   day,
-  slot,
+  past,
+  occurrence,
   members,
+  userId,
   colors,
 }: {
   need: DailyNeed;
   day: WeekDay;
-  slot: Slot;
+  past: boolean;
+  occurrence: DailyNeedOccurrence;
   members: HouseholdMember[];
-  colors: (typeof palette)["light"];
+  userId: string;
+  colors: Colors;
 }) {
-  const occurrence = slot.occurrence ?? slot.source;
-  const isBooked = occurrence?.status === "booked";
-  const isDone = occurrence?.status === "done";
-  if (!occurrence || (!isBooked && !isDone)) {
+  const dayLabel = `${day.short} ${day.number}`;
+  // Past days will open History (screens.md #18); not built yet, so they
+  // are read-only here.
+  const openSheet = past
+    ? undefined
+    : () =>
+        router.push({
+          pathname: "/task",
+          params: { needId: need.id, date: day.key },
+        });
+
+  if (occurrence.status === "open") {
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`Book ${need.title} on ${day.short} ${day.number}`}
-        onPress={() =>
-          router.push({
-            pathname: "/book-task",
-            params: { needId: need.id, date: day.key },
-          })
-        }
+        accessibilityLabel={t("week.slotOpenA11y", {
+          task: need.title,
+          day: dayLabel,
+        })}
+        disabled={!openSheet}
+        onPress={openSheet}
         style={[
           styles.openSlot,
-          { backgroundColor: "#FFF8EF", borderColor: "#E87919" },
+          {
+            backgroundColor: colors.openFill,
+            borderColor: colors.openBorder,
+          },
+          past && styles.pastSlot,
         ]}
       >
-        <SymbolView
-          name={{ ios: "plus", android: "add", web: "add" }}
-          tintColor="#9A4A12"
-          size={22}
-        />
+        {past ? null : (
+          <SymbolView
+            name={{ ios: "plus", android: "add", web: "add" }}
+            tintColor={colors.openText}
+            size={20}
+          />
+        )}
       </Pressable>
     );
   }
 
+  const isDone = occurrence.status === "done";
+  const ownerId = getSlotOwner(occurrence);
   const name =
-    occurrence.assignedName ??
-    occurrence.completedName ??
-    occurrence.bookedName ??
-    "Open";
-  const memberIndex = members.findIndex(
-    (member) => member.userId === occurrence.assignedUserId,
-  );
-  const color =
-    memberIndex >= 0
-      ? memberColors[memberIndex % memberColors.length]
-      : { background: "#E5DCF7", text: "#54378C" };
+    (isDone ? occurrence.completedName : occurrence.assignedName) ??
+    t("common.familyMember");
+  const color = ownerId
+    ? getMemberColor(members, ownerId)
+    : MemberColors[0];
+  const state = isDone
+    ? t("status.doneBy", { name, time: "" }).trim()
+    : ownerId === userId
+      ? t("status.claimed.me")
+      : t("status.claimed", { name });
 
   return (
-    <View
-      accessibilityLabel={`${need.title}, ${isDone ? "done" : `booked by ${name}`}`}
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t("week.slotA11y", {
+        task: need.title,
+        day: dayLabel,
+        state,
+      })}
+      disabled={!openSheet}
+      onPress={openSheet}
       style={[
         styles.assignedSlot,
-        { backgroundColor: isDone ? colors.inactive : color.background },
+        { backgroundColor: isDone ? colors.doneRow : color.background },
       ]}
     >
       <ThemedText style={[styles.initials, { color: color.text }]}>
         {getInitials(name)}
       </ThemedText>
       {isDone ? (
-        <View style={styles.doneMark}>
+        <View style={[styles.doneMark, { backgroundColor: colors.primary }]}>
           <SymbolView
             name={{ ios: "checkmark", android: "check", web: "check" }}
             tintColor="#FFFFFF"
@@ -444,13 +458,13 @@ function WeekSlot({
           />
         </View>
       ) : null}
-    </View>
+    </Pressable>
   );
 }
 
-function InactiveCell({ colors }: { colors: (typeof palette)["light"] }) {
+function InactiveCell({ colors }: { colors: Colors }) {
   return (
-    <View style={[styles.inactiveCell, { backgroundColor: colors.inactive }]}>
+    <View style={[styles.inactiveCell, { backgroundColor: colors.inset }]}>
       {[-12, 2, 16, 30, 44].map((left) => (
         <View key={left} style={[styles.hatch, { left }]} />
       ))}
@@ -458,74 +472,11 @@ function InactiveCell({ colors }: { colors: (typeof palette)["light"] }) {
   );
 }
 
-function getSlot(
-  needId: string,
-  dateKey: string,
-  date: Date,
-  occurrences: readonly DailyNeedOccurrence[],
-): Slot {
-  const occurrence = occurrences.find(
-    (item) => item.needId === needId && item.date === dateKey,
-  );
-  if (occurrence) return { occurrence };
-
-  const previous = occurrences
-    .filter((item) => item.needId === needId && item.date < dateKey)
-    .sort((first, second) => second.date.localeCompare(first.date))[0];
-  if (
-    !previous ||
-    (previous.status !== "booked" && previous.status !== "done") ||
-    (previous.repeatRule !== "daily" && previous.repeatRule !== "weekday")
-  ) {
-    return {};
-  }
-  if (
-    previous.repeatRule === "weekday" &&
-    new Date(`${previous.date}T12:00:00`).getDay() !== date.getDay()
-  ) {
-    return {};
-  }
-  return { source: { ...previous, date: dateKey, status: "booked" } };
-}
-
-function isNeedScheduled(need: DailyNeed, date: Date) {
-  const dayKey = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"][
-    date.getDay()
-  ];
-  return need.repeatDays.includes(dayKey);
-}
-
 function getMonday(date: Date, offset: number) {
   const monday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   const daysSinceMonday = (monday.getDay() + 6) % 7;
   monday.setDate(monday.getDate() - daysSinceMonday + offset * 7);
   return monday;
-}
-
-function formatDate(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
-
-function getInitials(name: string) {
-  return name
-    .split(/[\s._-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.slice(0, 2))
-    .join("");
-}
-
-function getWeekLabel(first: Date, last: Date) {
-  const firstMonth = new Intl.DateTimeFormat("en-GB", {
-    month: "short",
-  }).format(first);
-  const lastMonth = new Intl.DateTimeFormat("en-GB", {
-    month: "long",
-  }).format(last);
-  if (first.getMonth() === last.getMonth()) {
-    return `${first.getDate()} – ${last.getDate()} ${lastMonth}`;
-  }
-  return `${first.getDate()} ${firstMonth} – ${last.getDate()} ${lastMonth}`;
 }
 
 const styles = StyleSheet.create({
@@ -542,20 +493,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  pageTitle: { fontSize: 48, lineHeight: 56, fontWeight: "700" },
+  pageTitle: { fontSize: 30, lineHeight: 36, fontWeight: "700" },
   weekControls: { flexDirection: "row", gap: Spacing.two },
   weekButton: {
-    width: 58,
-    height: 58,
+    width: 44,
+    height: 44,
     borderWidth: 1.5,
-    borderRadius: 29,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
   },
-  dateRange: { fontSize: 19, paddingBottom: Spacing.three },
+  dateRange: { fontSize: 15, paddingBottom: Spacing.three },
   gridSurface: {
     paddingHorizontal: Spacing.two,
-    borderRadius: 28,
+    borderRadius: 18,
     overflow: "hidden",
     elevation: 1,
   },
@@ -598,10 +549,10 @@ const styles = StyleSheet.create({
     width: 19,
     height: 19,
     borderRadius: 10,
-    backgroundColor: "#286B50",
     alignItems: "center",
     justifyContent: "center",
   },
+  pastSlot: { opacity: 0.6 },
   openSlot: {
     width: 54,
     height: 54,
@@ -627,33 +578,32 @@ const styles = StyleSheet.create({
     transform: [{ rotate: "45deg" }],
   },
   coverageSection: { gap: Spacing.two, paddingTop: Spacing.three },
+  soloCard: {
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: Spacing.three,
+    gap: Spacing.one,
+  },
   coverageTitle: {
-    fontSize: 16,
+    fontSize: 12,
+    letterSpacing: 0.5,
     fontWeight: "700",
     paddingBottom: Spacing.one,
   },
   coverageRow: { flexDirection: "row", gap: Spacing.two },
   coverageCard: {
-    width: 132,
-    minHeight: 108,
-    borderRadius: 22,
+    width: 112,
+    minHeight: 88,
+    borderRadius: 16,
     justifyContent: "center",
     padding: Spacing.two,
     gap: Spacing.one,
   },
-  coverageCount: { fontSize: 34, lineHeight: 40, fontWeight: "700" },
-  coverageName: { fontSize: 16 },
+  coverageCount: { fontSize: 28, lineHeight: 34, fontWeight: "700" },
+  coverageName: { fontSize: 14 },
   openCoverage: {
     borderWidth: 2,
     borderStyle: "dashed",
-    borderColor: "#E87919",
   },
-  openCount: {
-    color: "#9A4A12",
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: "700",
-  },
-  openLabel: { color: "#9A4A12", fontSize: 16 },
-  error: { color: "#C43C25", paddingTop: Spacing.two },
+  error: { paddingTop: Spacing.two },
 });

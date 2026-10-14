@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Book a task</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&amp;family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#2F6B4F}a:hover{color:#1F4A36}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; position: relative; overflow: hidden; background: #F4F5F1; color: #1C2321; font-family: 'DM Sans', system-ui, sans-serif; display: flex; flex-direction: column">
+
+<div style="padding: 12px 12px 0; display: flex; align-items: center; gap: 4px">
+<a href="Main.dc.html" aria-label="Back to today" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #1C2321; border-radius: 22px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<div style="font-size: 15px; font-weight: 600">Book a task</div>
+</div>
+
+<div style="padding: 12px 20px 0; display: flex; flex-direction: column; gap: 20px; flex-grow: 1">
+
+<div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 2px rgba(28,35,33,0.06)">
+<div style="display: flex; align-items: center; gap: 8px">
+<div style="font-size: 12px; font-weight: 700; color: #8A4510; background: #FBE3CC; border-radius: 6px; padding: 3px 8px">OPEN</div>
+<div style="font-size: 13px; color: #5A635F">Thursday 8 Oct</div>
+</div>
+<h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; font-weight: 700; line-height: 1.1">Evening walk</h1>
+<div style="display: flex; gap: 16px; font-size: 14px; color: #3E4743">
+<div style="display: flex; align-items: center; gap: 6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>18:00 – 18:45</div>
+<div style="display: flex; align-items: center; gap: 6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 16 0 8 8 0 1 0-16 0"></path><path d="M12 4v8l5 5"></path></svg>45 min</div>
+</div>
+<div style="font-size: 14px; line-height: 1.45; color: #3E4743; background: #F4F5F1; border-radius: 12px; padding: 10px 12px">Use the harness, not the collar. Bring water and bags.</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-size: 13px; font-weight: 600; color: #5A635F; letter-spacing: 0.04em; text-transform: uppercase">Who’s doing it</div>
+<div style="display: flex; gap: 8px">
+<button style="height: 48px; padding: 0 14px 0 6px; border-radius: 24px; border: 2px solid #2F6B4F; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 600; color: #1C2321; display: flex; align-items: center; gap: 8px"><span style="width: 32px; height: 32px; border-radius: 16px; background: #DCE6F7; color: #1F4280; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">M</span>Me</button>
+<button style="height: 48px; padding: 0 14px 0 6px; border-radius: 24px; border: 1px solid #D3D8D0; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 500; color: #3E4743; display: flex; align-items: center; gap: 8px"><span style="width: 32px; height: 32px; border-radius: 16px; background: #FBE3CC; color: #8A4510; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">Ma</span>Maria</button>
+<button style="height: 48px; padding: 0 14px 0 6px; border-radius: 24px; border: 1px solid #D3D8D0; background: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 500; color: #3E4743; display: flex; align-items: center; gap: 8px"><span style="width: 32px; height: 32px; border-radius: 16px; background: #E9DFF5; color: #4F2C80; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">A</span>Alex</button>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="font-size: 13px; font-weight: 600; color: #5A635F; letter-spacing: 0.04em; text-transform: uppercase">Repeat</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; background: #E3E6E0; border-radius: 14px; padding: 4px">
+<button style="height: 44px; border: none; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; color: #1C2321; box-shadow: 0 1px 2px rgba(28,35,33,0.1)">Just today</button>
+<button style="height: 44px; border: none; border-radius: 10px; background: transparent; font-family: inherit; font-size: 14px; font-weight: 500; color: #3E4743">Every Thu</button>
+<button style="height: 44px; border: none; border-radius: 10px; background: transparent; font-family: inherit; font-size: 14px; font-weight: 500; color: #3E4743">Every day</button>
+</div>
+</div>
+
+<label style="display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border-radius: 14px; padding: 0 16px; height: 56px; font-size: 15px; font-weight: 500">
+Remind me 15 min before
+<input type="checkbox" checked style="width: 22px; height: 22px; accent-color: #2F6B4F">
+</label>
+
+<div style="font-size: 13px; line-height: 1.5; color: #5A635F">Everyone in the household sees that you booked it. When you’re back, tap <b style="color: #1C2321">Done</b> and add a note — for example how long you walked.</div>
+
+</div>
+
+<div style="padding: 16px 20px 28px">
+<a href="Main.dc.html" style="height: 56px; border-radius: 16px; background: #2F6B4F; color: #FFFFFF; font-size: 16px; font-weight: 600; text-decoration: none; display: flex; align-items: center; justify-content: center">Book evening walk</a>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
