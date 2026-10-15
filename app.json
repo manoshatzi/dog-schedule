@@ -10,7 +10,8 @@
     "ios": {
       "icon": "./assets/expo.icon",
       "infoPlist": {
-        "UIStatusBarHidden": true
+        "UIStatusBarHidden": true,
+        "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.manoshatzi.dog-schedule",
       "usesAppleSignIn": true,
